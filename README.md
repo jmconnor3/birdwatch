@@ -5,6 +5,9 @@
 ## Heading ##
   > PokemonGo for birdwatchers!
 
+## Wireframes ##
+![img](https://i.imgur.com/bsidcJQ.png)
+
 ## Sub-Heading ##
   > An app that maps out recent birdsightings and help keep track of your own.
 
@@ -29,8 +32,12 @@
 ## Closing and Call to Action ##
   > Grab your binoculars, open your Birdwatch app, and start birding! 
   
+## Techstack  
+  ![img](https://i.imgur.com/xtMoNLU.jpg)
   
-  ![img](https://i.imgur.com/THZD21G.png)
+  
+  
+  
   ![img](https://www.appgeo.com/wp-content/uploads/directions_api-350x350.png)
   ![img](https://ebirdhotspots.wikispaces.com/file/view/The_Cornell_Lab_of_Ornithology.png/591467806/The_Cornell_Lab_of_Ornithology.png)
   ![img](https://modernizehq.com/assets/images/logos/express-logo.png)
