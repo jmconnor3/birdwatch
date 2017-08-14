@@ -6,13 +6,17 @@
   > PokemonGo for birdwatchers!
   
 ## Sub-Heading ##
-  > An app that maps out recent birdsightings and help keep track of your own.
+  > An cross-platform application that maps out recent birdsightings.
 
 ## Summary ##
-  > Birdwatch does the legwork for identifying recent bird sightings and hotspots, making it easier for birding novist and veterans to descover new birds. We combine user generated timeline with the location of recent sightings along with The Cornell Lab of Ornithology's database to create a trusted source for documented bird sightings. Our users travel to different hotspots on the map to find new and rare birds. They also learn about all the different types of birds in their neighborhood that they might not have known about. We've also integrated a social component that allows folks to share their bird lists with other birding enthusiasts. 
+  > Pokemon Go for birdwatchers! Birdwatch does the legwork of identifying recent bird sightings and hotspots, making it easier for birding novice and veterans to discover new birds. We combine crowd generated feedback along with The Cornell Lab of Ornithology's eBird API to create a source for documented bird sightings 
   
 ## Techstack  
   ![img](https://i.imgur.com/xtMoNLU.jpg)
+  
+  Front-end: React, MaterialUI
+  Back-end: Express, PostgreSQL
+  Technologies: Bcrypt, Google Maps API, Cornell Lab of Ornithology's eBird API, Webpack 3.0
   
 ## How to run the app on localhost ##
   > npm run build //starts bundling process with webpack <br>
