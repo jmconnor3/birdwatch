@@ -104,12 +104,7 @@ app.post('/logout', (req, res) => {
  * join table. after that we can then update our user's checklist or add to it
  */
 app.post('/birds', (req, res) => {
-<<<<<<< HEAD
-  console.log(req.body);
-  let user = req.session.user;
-
-=======
-  const user = req.session.user;
+  const user = req.session.user || 'test';
   let userLocId;
   let birdId;
   let locId;
@@ -155,7 +150,6 @@ app.post('/birds', (req, res) => {
       });
     });
   });
->>>>>>> a6b3f595c298be601862a4e261eba61e317866e9
 });
 
 app.post('/map', (req, res) => {
