@@ -141,6 +141,9 @@ app.get('/profile', (req, res) => {
     });
   });
 });
+/*
+set route for get request from client to retreive markers of local siting
+*/
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, './public/index.html'));
