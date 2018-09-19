@@ -93,19 +93,9 @@ app.post('/logout', (req, res) => {
 });
 
 app.post('/birds', (req, res) => {
+  console.log(req.body);
   let user = req.session.user;
-  console.log('this is user session', req.session);
-  db.getUser(user)
-  .then(data => {
-    console.log('this is data', data);
-    let id = data[0].id;
-    db.createBird(req.body.birdType, req.body.location, id)
-    .then(data => {
-      res.writeHead(200);
-      res.write('bird added!');
-      res.end();
-    });
-  });
+
 });
 
 app.post('/map', (req, res) => {
@@ -131,6 +121,7 @@ app.get('/birds', (req, res) => {
 });
 
 app.get('/profile', (req, res) => {
+
   db.getUser(req.session.user)
   .then(data => {
     let id = data[0].id;
