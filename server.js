@@ -40,10 +40,10 @@ app.post('/login', (req, res) => {
     if (data.length) {
       console.log(data);
 
-      const salt = data[0].salt;
-      const servPassHash = data[0].password;
-      const sentPassHash = bcrypt.hashSync(req.body.password, salt);
-      if (sentPassHash === servPassHash) {
+      // const salt = data[0].salt;
+      // const servPassHash = data[0].password;
+      // const sentPassHash = bcrypt.hashSync(req.body.password, salt);
+      if (bcrypt.compareSync(req.body.password, data[0].password)) {
         req.session.regenerate(() => {
           req.session.user = req.body.username;
           res.writeHead(200);
