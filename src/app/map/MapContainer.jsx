@@ -27,7 +27,7 @@ class MapContainer extends Component {
     this.setState({ latLng: data });
   }
   birdCatcher(data) {
-    this.setState({ birdData: data.data });
+    this.setState({ birdData: data });
   }
   /*
    set up a get request to add all of the ebird features so that when the map is rendering it displays all of the 
@@ -36,9 +36,8 @@ class MapContainer extends Component {
 
   eBird() {
     axios.get('/eBird')
-   .then(({data}) => {
-     console.log(data);
-     console.log('running');
+   .then(({ data }) => {
+     this.birdCatcher(data);
    });
   }
 
