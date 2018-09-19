@@ -1,0 +1,5 @@
+/*
+make a function that makes a request to the ebird that obtains all of the recent sitings for birds
+in the metro new orleans area
+
+*/
