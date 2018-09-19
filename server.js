@@ -92,19 +92,61 @@ app.post('/logout', (req, res) => {
     res.end();
   });
 });
-
+/**
+ * so when a bird is added a lot of things have to happen in particular order
+ * first we need to add the bird to the bird db and store the common name and scientific name
+ * then we need to store where this particular bird was seen
+ * so we need to add this lat and long to our location database
+ * once we make sure we have the location stored we can then grab its id
+ * and we then grab the bird id. with these we can then update the most recent sighting information
+ * since this was given to us by a user we need to then store the users id and loc id in their
+ * join table. after that we can then update our user's checklist or add to it
+ */
 app.post('/birds', (req, res) => {
   const user = req.session.user;
+  let userLocId;
+  let birdId;
+  let locId;
   console.log('this is user session', req.session);
   db.getUser(user)
   .then((data) => {
     console.log('this is data', data);
-    const id = data[0].id;
-    db.createBird(req.body.birdType, req.body.location, id)
+    const userId = data[0].id;
+    db.createBird(req.body.birdCommon, req.body.birdScience)
     .then(() => {
-      res.writeHead(200);
-      res.write('bird added!');
-      res.end();
+      db.storeLocation(req.body.location)
+      .then(() => {
+        db.getLocId(req.body.location)
+        .then((location) => {
+          console.log(location, ' line 112');
+          locId = location[0].id;
+          db.getBirdId(req.body.birdScience)
+          .then((birdInfo) => {
+            console.log(birdInfo, ' line 116');
+            birdId = birdInfo[0].id;
+            db.getSightings(birdId, locId)
+            .then((sightingArray) => {
+              console.log(sightingArray, ' line 120');
+              if (sightingArray.length > 0) {
+                db.updateSightings(birdId, locId);
+              }
+              db.addToUserLocations(userId, locId)
+              .then(() => {
+                db.getUserLocId(userId, locId)
+                .then((userLocArr) => {
+                  console.log(userLocArr, ' line 128');
+                  userLocId = userLocArr[0].id;
+                  db.addToChecklist(birdId, userLocId, req.body.lastSeen, req.body.flockSize);
+                  db.updateLastSeenAndFlock(birdId, userLocId, req.body.lastSeen, req.body.flockSize);
+                });
+              });
+            });
+          });
+        });
+      });
+      // res.writeHead(200);
+      // res.write('bird added!');
+      // res.end();
     });
   });
 });
