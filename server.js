@@ -19,7 +19,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.listen(PORT, () => {
+app.listen(3000, () => {
   console.log(`Listening at ${PORT}`);
 });
 
@@ -34,14 +34,16 @@ app.use(session({
 
 
 app.post('/login', (req, res) => {
-  console.log(req.session)
+  console.log(req.session);
   db.getUser(req.body.username)
-  .then(data => {
+  .then((data) => {
     if (data.length) {
-      let salt = data[0].salt;
-      let servPassHash = data[0].password;
-      let sentPassHash = bcrypt.hashSync(req.body.password, salt);
-      if (sentPassHash === servPassHash) { 
+      console.log(data);
+
+      const salt = data[0].salt;
+      const servPassHash = data[0].password;
+      const sentPassHash = bcrypt.hashSync(req.body.password, salt);
+      if (sentPassHash === servPassHash) {
         req.session.regenerate(() => {
           req.session.user = req.body.username;
           res.writeHead(200);
@@ -65,8 +67,8 @@ app.post('/signup', (req, res) => {
     if (data.length === 0) {
       const salt = bcrypt.genSaltSync(10);
       const hashedPass = bcrypt.hashSync(req.body.password, salt);
-      db.createUser(req.body.username, hashedPass, salt)
-      .then(data => {
+      db.createUser(req.body.username, hashedPass)
+      .then(() => {
         req.session.regenerate(() => {
           req.session.user = req.body.username;
           res.writeHead(200);
@@ -92,14 +94,14 @@ app.post('/logout', (req, res) => {
 });
 
 app.post('/birds', (req, res) => {
-  let user = req.session.user;
+  const user = req.session.user;
   console.log('this is user session', req.session);
   db.getUser(user)
-  .then(data => {
+  .then((data) => {
     console.log('this is data', data);
-    let id = data[0].id;
+    const id = data[0].id;
     db.createBird(req.body.birdType, req.body.location, id)
-    .then(data => {
+    .then(() => {
       res.writeHead(200);
       res.write('bird added!');
       res.end();
@@ -122,7 +124,7 @@ app.post('/map', (req, res) => {
 // get users most recent birds logged in db
 app.get('/birds', (req, res) => {
   db.getBirdsInDb(20)
-  .then(data => {
+  .then((data) => {
     res.writeHead(200);
     res.write(JSON.stringify(data));
     res.end();
@@ -131,12 +133,12 @@ app.get('/birds', (req, res) => {
 
 app.get('/profile', (req, res) => {
   db.getUser(req.session.user)
-  .then(data => {
-    let id = data[0].id;
+  .then((data) => {
+    const id = data[0].id;
     db.getBirdsByUser(id)
-    .then(data => {
+    .then((info) => {
       res.writeHead(200);
-      res.write(JSON.stringify(data));
+      res.write(JSON.stringify(info));
       res.end();
     });
   });
