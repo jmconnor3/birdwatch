@@ -7,6 +7,7 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const bcrypt = require('bcrypt');
 const path = require('path');
+const { eBird } = require('./utils/utils');
 
 const PORT = process.env.PORT;
 const app = express();
@@ -19,7 +20,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.listen(3000, () => {
+app.listen(PORT || 8080, () => {
   console.log(`Listening at ${PORT}`);
 });
 
@@ -183,6 +184,16 @@ app.get('/profile', (req, res) => {
       res.write(JSON.stringify(info));
       res.end();
     });
+  });
+});
+/*
+set route for get request from client to retreive markers of local siting
+*/
+app.get('/eBird', (req, res)=> {
+  eBird((err, result, body) => {
+    if (err) {
+      console.error(err);
+    } res.send(body);
   });
 });
 
