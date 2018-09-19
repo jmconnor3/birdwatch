@@ -32,13 +32,13 @@ class MapContainer extends Component {
   /*
    set up a get request to add all of the ebird features so that when the map is rendering it displays all of the 
    sitings that are logged into ebird.
-
   */
 
   eBird() {
     axios.get('/eBird')
    .then((res) => {
      console.log(res);
+     console.log('running')
    });
   }
 
