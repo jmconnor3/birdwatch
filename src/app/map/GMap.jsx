@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Map, { Marker, InfoWindow } from 'google-maps-react';
+
 import BirdLogo from '../../assets/images/cursorBW.png';
 import Moment from 'moment-timezone';
 
@@ -33,6 +34,7 @@ class GMap extends Component {
         {this.props.birdData.map((bird, i, arr) => {
           let ltd = bird.lat;
           let lon = bird.lng;
+          console.log(bird);
           return (
             <Marker
               onClick={this.onMarkerClick}
