@@ -130,6 +130,8 @@ app.post('/birds', (req, res) => {
               console.log(sightingArray, ' line 120');
               if (sightingArray.length > 0) {
                 db.updateSightings(birdId, locId);
+              } else {
+                db.storeFirstSeen(birdId, locId, Date.now(), req.body.flockSize);
               }
               db.addToUserLocations(userId, locId)
               .then(() => {
