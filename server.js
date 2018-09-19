@@ -35,14 +35,16 @@ app.use(session({
 
 
 app.post('/login', (req, res) => {
-  console.log(req.session)
+  console.log(req.session);
   db.getUser(req.body.username)
-  .then(data => {
+  .then((data) => {
     if (data.length) {
-      let salt = data[0].salt;
-      let servPassHash = data[0].password;
-      let sentPassHash = bcrypt.hashSync(req.body.password, salt);
-      if (sentPassHash === servPassHash) { 
+      console.log(data);
+
+      // const salt = data[0].salt;
+      // const servPassHash = data[0].password;
+      // const sentPassHash = bcrypt.hashSync(req.body.password, salt);
+      if (bcrypt.compareSync(req.body.password, data[0].password)) {
         req.session.regenerate(() => {
           req.session.user = req.body.username;
           res.writeHead(200);
@@ -66,8 +68,8 @@ app.post('/signup', (req, res) => {
     if (data.length === 0) {
       const salt = bcrypt.genSaltSync(10);
       const hashedPass = bcrypt.hashSync(req.body.password, salt);
-      db.createUser(req.body.username, hashedPass, salt)
-      .then(data => {
+      db.createUser(req.body.username, hashedPass)
+      .then(() => {
         req.session.regenerate(() => {
           req.session.user = req.body.username;
           res.writeHead(200);
@@ -91,11 +93,69 @@ app.post('/logout', (req, res) => {
     res.end();
   });
 });
-
+/**
+ * so when a bird is added a lot of things have to happen in particular order
+ * first we need to add the bird to the bird db and store the common name and scientific name
+ * then we need to store where this particular bird was seen
+ * so we need to add this lat and long to our location database
+ * once we make sure we have the location stored we can then grab its id
+ * and we then grab the bird id. with these we can then update the most recent sighting information
+ * since this was given to us by a user we need to then store the users id and loc id in their
+ * join table. after that we can then update our user's checklist or add to it
+ */
 app.post('/birds', (req, res) => {
+<<<<<<< HEAD
   console.log(req.body);
   let user = req.session.user;
 
+=======
+  const user = req.session.user;
+  let userLocId;
+  let birdId;
+  let locId;
+  console.log('this is user session', req.session);
+  db.getUser(user)
+  .then((data) => {
+    console.log('this is data', data);
+    const userId = data[0].id;
+    db.createBird(req.body.birdCommon, req.body.birdScience)
+    .then(() => {
+      db.storeLocation(req.body.location)
+      .then(() => {
+        db.getLocId(req.body.location)
+        .then((location) => {
+          console.log(location, ' line 112');
+          locId = location[0].id;
+          db.getBirdId(req.body.birdScience)
+          .then((birdInfo) => {
+            console.log(birdInfo, ' line 116');
+            birdId = birdInfo[0].id;
+            db.getSightings(birdId, locId)
+            .then((sightingArray) => {
+              console.log(sightingArray, ' line 120');
+              if (sightingArray.length > 0) {
+                db.updateSightings(birdId, locId);
+              }
+              db.addToUserLocations(userId, locId)
+              .then(() => {
+                db.getUserLocId(userId, locId)
+                .then((userLocArr) => {
+                  console.log(userLocArr, ' line 128');
+                  userLocId = userLocArr[0].id;
+                  db.addToChecklist(birdId, userLocId, req.body.lastSeen, req.body.flockSize);
+                  db.updateLastSeenAndFlock(birdId, userLocId, req.body.lastSeen, req.body.flockSize);
+                  res.writeHead(200);
+                  res.write('bird added!');
+                  res.end();
+                });
+              });
+            });
+          });
+        });
+      });
+    });
+  });
+>>>>>>> a6b3f595c298be601862a4e261eba61e317866e9
 });
 
 app.post('/map', (req, res) => {
@@ -112,8 +172,8 @@ app.post('/map', (req, res) => {
 
 // get users most recent birds logged in db
 app.get('/birds', (req, res) => {
-  db.getBirdsInDb(20)
-  .then(data => {
+  db.getBirdsInDb()
+  .then((data) => {
     res.writeHead(200);
     res.write(JSON.stringify(data));
     res.end();
@@ -123,12 +183,12 @@ app.get('/birds', (req, res) => {
 app.get('/profile', (req, res) => {
 
   db.getUser(req.session.user)
-  .then(data => {
-    let id = data[0].id;
+  .then((data) => {
+    const id = data[0].id;
     db.getBirdsByUser(id)
-    .then(data => {
+    .then((info) => {
       res.writeHead(200);
-      res.write(JSON.stringify(data));
+      res.write(JSON.stringify(info));
       res.end();
     });
   });
