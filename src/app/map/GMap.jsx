@@ -23,7 +23,6 @@ class GMap extends Component {
     });
   }
   render() {
-    console.log(this.props);
     return (
       <div>
         <Map
@@ -32,19 +31,19 @@ class GMap extends Component {
           initialCenter={this.props.latLng}
           center={this.props.latLng}
         >
-        {this.props.birdData.map((bird, i, arr) => {
-          const tat = bird.lat;
-          const tng = bird.lng;
-          // console.log(bird);
+        {this.props.birdData.map((bird, i) => {  
+          const { lat, lng } = bird;
           return (
             <Marker
               onClick={this.onMarkerClick}
               name={`${bird.comName}(${bird.howMany})`}
               date={`Last seen ${Moment(bird.obsDt).fromNow()}`}
               sciName={`Sci name: ${bird.sciName}`}
+              loc={`Location: ${bird.locName}`}
               key={i}
               icon={BirdLogo}
-              position={{ lat: tat, lng: tng }}
+              position={{ lat: lat, lng: lng }}
+          
             />
           );
         })}
@@ -56,6 +55,7 @@ class GMap extends Component {
             <div>
               <center><h2>{this.state.selectedPlace.name}</h2></center>
               <center><h4>{this.state.selectedPlace.sciName}</h4></center>
+              <center><h4>{this.state.selectedPlace.loc}</h4></center>
               <center><h4>{this.state.selectedPlace.date}</h4></center>
             </div>
           </InfoWindow>
