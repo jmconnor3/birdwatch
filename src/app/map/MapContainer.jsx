@@ -37,9 +37,7 @@ class MapContainer extends Component {
   eBird() {
     axios.get('/eBird')
    .then(({ data }) => {
-    console.log(data);
      this.birdCatcher(data);
-   
    });
   }
 
