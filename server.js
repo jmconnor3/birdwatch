@@ -7,7 +7,7 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const bcrypt = require('bcrypt');
 const path = require('path');
-const request = require('request');
+const { eBird } = require('./utils/utils');
 
 const PORT = process.env.PORT;
 const app = express();
@@ -146,7 +146,11 @@ app.get('/profile', (req, res) => {
 set route for get request from client to retreive markers of local siting
 */
 app.get('/eBird', (req, res)=> {
-  res.send('test');
+  eBird((err, result, body) => {
+    if (err) {
+      console.error(err);
+    } res.send(body);
+  });
 });
 
 app.get('*', (req, res) => {
