@@ -123,7 +123,7 @@ app.post('/map', (req, res) => {
 
 // get users most recent birds logged in db
 app.get('/birds', (req, res) => {
-  db.getBirdsInDb(20)
+  db.getBirdsInDb()
   .then((data) => {
     res.writeHead(200);
     res.write(JSON.stringify(data));
