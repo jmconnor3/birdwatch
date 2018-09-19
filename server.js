@@ -138,15 +138,15 @@ app.post('/birds', (req, res) => {
                   userLocId = userLocArr[0].id;
                   db.addToChecklist(birdId, userLocId, req.body.lastSeen, req.body.flockSize);
                   db.updateLastSeenAndFlock(birdId, userLocId, req.body.lastSeen, req.body.flockSize);
+                  res.writeHead(200);
+                  res.write('bird added!');
+                  res.end();
                 });
               });
             });
           });
         });
       });
-      // res.writeHead(200);
-      // res.write('bird added!');
-      // res.end();
     });
   });
 });
