@@ -25,9 +25,11 @@ class Comment extends Component {
     this.submitText = this.submitText.bind(this);
   }
   submitText() {
-    const message = { birdType: this.state.birdType, location: this.state.location, flockSize: this.state.count };
+    const message = {
+      birdType: this.state.birdType, location: this.state.location, flockSize: this.state.count,
+    };
     axios.post('/birds', message)
-    .then( (response) => {
+    .then((response) => {
       console.log(response, 'success');
       this.props.loadFeed();
     })

@@ -7,7 +7,7 @@ import MenuItem from 'material-ui/MenuItem';
 import AppBar from 'material-ui/AppBar';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
-
+// import search component here
 class Header extends Component {
   constructor(props) {
     super(props);
@@ -28,6 +28,7 @@ class Header extends Component {
                 <IconMenu
                   iconButtonElement={<IconButton><MoreVertIcon color="white" /></IconButton>} >
                   <MenuItem primaryText="Map" containerElement={<Link to='/map' />} />
+                  <MenuItem primaryText="Search" containerElement={<Link to='/map' />} />
                   <MenuItem primaryText="Timeline" containerElement={<Link to='/timeline' />} />
                   <MenuItem primaryText="My Bird List" containerElement={<Link to='/profile' />} />
                   <MenuItem primaryText="Logout" containerElement={<Link to='/logout' />} onClick={e => this.logsOut(e)} />
