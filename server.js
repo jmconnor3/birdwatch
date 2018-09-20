@@ -7,8 +7,8 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const bcrypt = require('bcrypt');
 const path = require('path');
-const { eBird } = require('./utils/utils');
-const { sciName } = require('./utils/utils');
+const { eBird, sciName, coords } = require('./utils/utils');
+
 
 const PORT = process.env.PORT;
 const app = express();
@@ -127,7 +127,14 @@ app.post('/birds', (req, res) => {
     } const result = JSON.parse(body);
     const { gen, sp } = result.recordings[0];
     userBird.birdScience = `${gen} ${sp}`;
-    console.log(userBird);
+    coords(req.body.location, (error, resp, bod) => {
+      if (err) {
+        console.error(err);
+      } const q = JSON.parse(bod);
+      const { location } = q.results[0].geometry;
+      userBird.location = location;
+      console.log(userBird);
+    });
   });
 
   const user = req.session.user || 'test';
