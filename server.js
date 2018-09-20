@@ -117,10 +117,15 @@ app.post('/logout', (req, res) => {
     }
 }
  */
+
+ /* *** TODO  ***
+ create chain of async calls to be able to fill schema for USER DB;
+ */
 app.post('/birds', (req, res) => {
   console.log(req.body);
   const userBird = {};
   userBird.birdCommon = req.body.birdType;
+  userBird.flockSize = req.body.flockSize;
   sciName(req.body.birdType, (err, response, body) => {
     if (err) {
       console.error(err);
