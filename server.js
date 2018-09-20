@@ -239,6 +239,14 @@ app.get('/eBird', (req, res)=> {
     } res.send(body);
   });
 });
+app.post('/search', (req, res) => {
+/*
+answers client request with an object with a bird common name
+to send to api calls for photo, description and sound clip
+*/
+console.log(req.body);
+res.end();
+});
 
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, './public/index.html'));
