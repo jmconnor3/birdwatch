@@ -14,24 +14,23 @@ class SimpleForm extends Component {
   }
   handleFormSubmit(event) {
     event.preventDefault();
-    console.log(this.state.input);
-    // geocodeByAddress(this.state.address)
-    //   .then(results => getLatLng(results[0]))
-    //   .then((latLng) => {
-    //     axios.post('/map', latLng)
-    //     .then((response) => {
-    //       console.log(response, 'search response');
-    //       this.props.birdCatcher(response);
-    //     })
-    //     .catch(error => console.error(error));
-    //     this.props.getLatLng(latLng);
-    //     console.log('Success', latLng);
-    //   })
-    //   .catch(error => console.error('Error', error));
+    /*
+    send a post to /search route so that it returns an object 
+    with a photo a sound clip and a short description
+
+    */
+   console.log(this.state.input);
+    axios.post('/search', {
+      search: this.state.input,
+    }).then((res) => {
+      console.log(res);
+    }).catch((err) => {
+      console.error(err);
+    });
   }
 
   handleChange(event) {
-    this.setState({input: event.target.value});
+    this.setState({ input: event.target.value });
   }
 
   render() {
