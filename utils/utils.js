@@ -1,5 +1,5 @@
 const request = require('request');
-const key = require ('../config.js');
+const key = require('../config.js');
 
 /*
 make a function that makes a request to the ebird that obtains all of the recent sitings for birds
