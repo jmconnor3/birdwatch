@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
-
+import Header from '../Header.jsx';
+import Footer from '../timeline/Footer.jsx';
 class SimpleForm extends Component {
   constructor(props) {
     super(props);
@@ -34,12 +35,16 @@ class SimpleForm extends Component {
 
   render() {
     return (
-      <form onSubmit={this.handleFormSubmit}>
-        <label>
-      <input type="text" value={this.state.value} onChange={this.handleChange} />
-        </label>
-        <input type="submit" value="Submit" />
-      </form>
+      <div>  
+        <Header />
+          <form onSubmit={this.handleFormSubmit}>
+            <label>
+              <input type="text" value={this.state.value} onChange={this.handleChange} />
+            </label>
+            <input type="submit" value="Submit" />
+          </form>
+          <Footer />
+      </div>
     );
   }
 }
