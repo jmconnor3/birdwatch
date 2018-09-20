@@ -251,7 +251,9 @@ console.log(req.body);
     if (err) {
       console.error(err);
     } const q = JSON.parse(body);
-    console.log(_.pick(q, ['query', 'pages']));
+    const k = _.pick(q, ['query']);
+    const imgDes = Object.values(k.query.pages);
+    const { description, images } = imgDes[0];
   });
   // getClipSci(req.body.search, (err, response, body) => {
   //   if (err) {
