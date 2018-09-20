@@ -69,6 +69,15 @@ const getImgDes = (bird, callback) => {
     } callback(err, response, body);
   });
 };
+const getClipSci = (bird, callback) => {
+request(`http://www.xeno-canto.org/api/2/recordings?query=${bird}`,
+(err, response, body) => {
+if (err) {
+  console.error(err);
+} callback(err, response, body);
+});
+};
+module.exports.getClipSci = getClipSci;
 module.exports.getImgDes = getImgDes;
 module.exports.coords = coords;
 module.exports.sciName = sciName;
