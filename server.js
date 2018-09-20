@@ -7,7 +7,7 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const bcrypt = require('bcrypt');
 const path = require('path');
-const { eBird, sciName, coords, getImgDes } = require('./utils/utils');
+const { eBird, sciName, coords, getImgDes, getClipSci } = require('./utils/utils');
 const _ = require('lodash');
 
 
@@ -233,7 +233,7 @@ app.get('/profile', (req, res) => {
 /*
 set route for get request from client to retreive markers of local siting
 */
-app.get('/eBird', (req, res)=> {
+app.get('/eBird', (req, res) => {
   eBird((err, result, body) => {
     if (err) {
       console.error(err);
@@ -251,9 +251,14 @@ console.log(req.body);
     if (err) {
       console.error(err);
     } const q = JSON.parse(body);
-    const send = _.pick(q, ['pages']);
     console.log(_.pick(q, ['query', 'pages']));
   });
+  // getClipSci(req.body.search, (err, response, body) => {
+  //   if (err) {
+  //     console.error(err);
+  //   } const k = JSON.parse(body);
+  //   const {gen, sp, file } = k.recordings[0];
+  // });
   res.end();
 });
 
