@@ -16,7 +16,7 @@ const eBird = (callback) => {
       'X-eBirdApiToken': key.ebirdKEY,
     },
   };
-  request('https://ebird.org/ws2.0/data/obs/US-LA-071/recent', options, (err, response, body) => {
+  request('', options, (err, response, body) => {
     if (err) {
       console.error(err);
     } callback(err, response, body);
@@ -46,5 +46,14 @@ const sciName = (name, callback) => {
     } callback(err, response, body);
   });
 };
+
+const coords = (location, callback) => {
+  request(`https://maps.googleapis.com/maps/api/geocode/json?address=${location}&key=${key.gKey}`, (err, response, body) => {
+    if (err) {
+      console.error(err);
+    } callback(err, response, body);
+  });
+};
+module.exports.coords = coords;
 module.exports.sciName = sciName;
 module.exports.eBird = eBird;
