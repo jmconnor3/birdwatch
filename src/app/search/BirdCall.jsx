@@ -19,7 +19,6 @@ class SimpleForm extends Component {
     with a photo a sound clip and a short description
 
     */
-   console.log(this.state.input);
     axios.post('/search', {
       search: this.state.input,
     }).then((res) => {
