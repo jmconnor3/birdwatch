@@ -19,13 +19,13 @@ const style = {
 class Comment extends Component {
   constructor(props) {
     super(props);
-    this.state = { open: false, birdType: '', location: '' };
+    this.state = { open: false, birdType: '', location: '', count: 1 };
     this.handleClose = this.handleClose.bind(this);
     this.handleOpen = this.handleOpen.bind(this);
     this.submitText = this.submitText.bind(this);
   }
   submitText() {
-    const message = { birdType: this.state.birdType, location: this.state.location };
+    const message = { birdType: this.state.birdType, location: this.state.location, flockSize: this.state.count };
     axios.post('/birds', message)
     .then( (response) => {
       console.log(response, 'success');
@@ -82,6 +82,7 @@ class Comment extends Component {
                   Log the location and type of bird you have spotted.
                   <br />
                     <TextField name="text" hintText="bird type" onChange={(e, newVal) => this.setState({ birdType: newVal })} />
+                    <TextField name="text" hintText="count" onChange={(e, newVal) => this.setState({ count: newVal })} />
                     <Geosuggest 
                       ref={el => this._geoSuggest=el}
                       placeholder="location"
