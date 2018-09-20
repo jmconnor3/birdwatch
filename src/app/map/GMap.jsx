@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Map, { Marker, InfoWindow } from 'google-maps-react';
+
 import BirdLogo from '../../assets/images/cursorBW.png';
 import Moment from 'moment-timezone';
 
@@ -30,21 +31,23 @@ class GMap extends Component {
           initialCenter={this.props.latLng}
           center={this.props.latLng}
         >
-        {this.props.birdData.map((bird, i, arr) => {
-          let ltd = bird.lat;
-          let lon = bird.lng;
+        {this.props.birdData.map((bird, i) => {  
+          const { lat, lng } = bird;
           return (
             <Marker
               onClick={this.onMarkerClick}
               name={`${bird.comName}(${bird.howMany})`}
               date={`Last seen ${Moment(bird.obsDt).fromNow()}`}
               sciName={`Sci name: ${bird.sciName}`}
+              loc={`Location: ${bird.locName}`}
               key={i}
               icon={BirdLogo}
-              position={{ lat: ltd, lng: lon }}
+              position={{ lat: lat, lng: lng }}
+          
             />
           );
         })}
+
           <InfoWindow
             marker={this.state.activeMarker}
             visible={this.state.showingInfoWindow}
@@ -52,6 +55,7 @@ class GMap extends Component {
             <div>
               <center><h2>{this.state.selectedPlace.name}</h2></center>
               <center><h4>{this.state.selectedPlace.sciName}</h4></center>
+              <center><h4>{this.state.selectedPlace.loc}</h4></center>
               <center><h4>{this.state.selectedPlace.date}</h4></center>
             </div>
           </InfoWindow>

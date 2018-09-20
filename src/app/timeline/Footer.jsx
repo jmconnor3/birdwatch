@@ -5,8 +5,10 @@ import Paper from 'material-ui/Paper';
 import { Link } from 'react-router-dom';
 import LocationOn from 'material-ui/svg-icons/communication/location-on';
 import FileCloudDownload from 'material-ui/svg-icons/file/cloud-download';
+import SearchIcon from 'material-ui/svg-icons/action/search';
 import { grey50, yellow500 } from 'material-ui/styles/colors';
 
+const schIcon = <SearchIcon color={grey50} hoverColor={yellow500} />;
 const fileDownload = <FileCloudDownload color={grey50} hoverColor={yellow500} />;
 const nearbyIcon = <LocationOn color={grey50} hoverColor={yellow500} />;
 
@@ -38,7 +40,12 @@ class Footer extends Component {
                   icon={nearbyIcon}
                   containerElement={<Link to="/map" />}
                 />
+                <BottomNavigationItem
+                  icon={schIcon}
+                  containerElement={<Link to="/search" />}
+                />
               </BottomNavigation>
+              
             </Paper>
           </div>
         </MuiThemeProvider>
