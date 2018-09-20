@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
-import { TextField } from 'material-ui/';
+import { Dialog, TextField } from 'material-ui/';
 import Header from '../Header.jsx';
 import Footer from '../timeline/Footer.jsx';
+import BirdCallInfo from './BirdCallInfo.jsx';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 
 class SimpleForm extends Component {
@@ -27,7 +28,6 @@ class SimpleForm extends Component {
     axios.post('/search', {
       search: this.state.input,
     }).then((res) => {
-      console.log(res);
     }).catch((err) => {
       console.error(err);
     });
@@ -45,10 +45,13 @@ class SimpleForm extends Component {
             <Header />
             <form onSubmit={this.handleFormSubmit}>
               <TextField name="text" placeholder="search" value={this.state.value} onChange={this.handleChange} />
-           </form>
-        <Footer />
-      </div>
-      </MuiThemeProvider>
+            </form>
+            <Dialog open={true}>
+              <BirdCallInfo />
+            </Dialog>
+            <Footer />
+          </div>
+        </MuiThemeProvider>
       </div>
     );
   }
