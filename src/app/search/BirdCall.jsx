@@ -1,8 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import axios from 'axios';
+import { TextField } from 'material-ui/';
 import Header from '../Header.jsx';
 import Footer from '../timeline/Footer.jsx';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+
 class SimpleForm extends Component {
   constructor(props) {
     super(props);
@@ -20,6 +23,7 @@ class SimpleForm extends Component {
     with a photo a sound clip and a short description
 
     */
+    console.log(this.state.input);
     axios.post('/search', {
       search: this.state.input,
     }).then((res) => {
@@ -35,15 +39,16 @@ class SimpleForm extends Component {
 
   render() {
     return (
-      <div>  
-        <Header />
-          <form onSubmit={this.handleFormSubmit}>
-            <label>
-              <input type="text" value={this.state.value} onChange={this.handleChange} />
-            </label>
-            <input type="submit" value="Submit" />
-          </form>
-          <Footer />
+      <div style={{ textAlign: 'center', padding: 8, margin: '24px -12px -12px -12px' }}>
+        <MuiThemeProvider>
+          <div>
+            <Header />
+            <form onSubmit={this.handleFormSubmit}>
+              <TextField name="text" placeholder="search" value={this.state.value} onChange={this.handleChange} />
+           </form>
+        <Footer />
+      </div>
+      </MuiThemeProvider>
       </div>
     );
   }
