@@ -8,7 +8,8 @@ class SimpleForm extends Component {
     this.state = {
       input: '',
     };
-    this.onChange = input => this.setState({ input });
+    // this.onChange = input => this.setState({ input });
+    this.handleChange = this.handleChange.bind(this);
     this.handleFormSubmit = this.handleFormSubmit.bind(this);
   }
   handleFormSubmit(event) {
@@ -27,6 +28,10 @@ class SimpleForm extends Component {
     //     console.log('Success', latLng);
     //   })
     //   .catch(error => console.error('Error', error));
+  }
+
+  handleChange(event) {
+    this.setState({input: event.target.value});
   }
 
   render() {
