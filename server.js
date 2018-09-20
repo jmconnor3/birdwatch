@@ -7,7 +7,8 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const bcrypt = require('bcrypt');
 const path = require('path');
-const { eBird, sciName, coords } = require('./utils/utils');
+const { eBird, sciName, coords, getImgDes } = require('./utils/utils');
+const _ = require('lodash');
 
 
 const PORT = process.env.PORT;
@@ -244,8 +245,16 @@ app.post('/search', (req, res) => {
 answers client request with an object with a bird common name
 to send to api calls for photo, description and sound clip
 */
+
 console.log(req.body);
-res.end();
+  getImgDes(req.body.search, (err, response, body) => {
+    if (err) {
+      console.error(err);
+    } const q = JSON.parse(body);
+    const send = _.pick(q, ['pages']);
+    console.log(_.pick(q, ['query', 'pages']));
+  });
+  res.end();
 });
 
 app.get('*', (req, res) => {
