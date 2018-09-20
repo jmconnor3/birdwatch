@@ -54,6 +54,22 @@ const coords = (location, callback) => {
     } callback(err, response, body);
   });
 };
+/*
+***
+build a method that obtains the soundclip and sciName
+build a method that obtains a photo and descritption
+
+*/
+
+const getImgDes = (bird, callback) => {
+  request(`http://en.wikipedia.org//w/api.php?action=query&format=json&prop=info%7Cpageprops%7Cdescription%7Cimages&titles=${bird}`,
+  (err, response, body) => {
+    if (err) {
+      console.error(err);
+    } callback(err, response, body);
+  });
+};
+module.exports.getImgDes = getImgDes;
 module.exports.coords = coords;
 module.exports.sciName = sciName;
 module.exports.eBird = eBird;
