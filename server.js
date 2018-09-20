@@ -254,14 +254,20 @@ console.log(req.body);
     const k = _.pick(q, ['query']);
     const imgDes = Object.values(k.query.pages);
     const { description, images } = imgDes[0];
+    getClipSci(req.body.search, (erro, response, bod) => {
+      if (erro) {
+        console.error(erro);
+      } const g = JSON.parse(bod);
+      const { gen, sp, file } = g.recordings[0];
+      const send = {
+        descript: description,
+        imgs: images,
+        sciName: `${gen} ${sp}`,
+        audio: file,
+      };
+      res.send(send);
+    });
   });
-  // getClipSci(req.body.search, (err, response, body) => {
-  //   if (err) {
-  //     console.error(err);
-  //   } const k = JSON.parse(body);
-  //   const {gen, sp, file } = k.recordings[0];
-  // });
-  res.end();
 });
 
 app.get('*', (req, res) => {
