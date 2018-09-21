@@ -245,8 +245,6 @@ app.post('/search', (req, res) => {
 answers client request with an object with a bird common name
 to send to api calls for photo, description and sound clip
 */
-
-console.log(req.body);
   getImgDes(req.body.search, (err, response, body) => {
     if (err) {
       console.error(err);
@@ -254,6 +252,7 @@ console.log(req.body);
     const k = _.pick(q, ['query']);
     const imgDes = Object.values(k.query.pages);
     const { description, images } = imgDes[0];
+    const imgArray = images.map(image => image.title);
     getClipSci(req.body.search, (erro, response, bod) => {
       if (erro) {
         console.error(erro);
@@ -261,10 +260,11 @@ console.log(req.body);
       const { gen, sp, file } = g.recordings[0];
       const send = {
         descript: description,
-        imgs: images,
+        imgs: imgArray,
         sciName: `${gen} ${sp}`,
         audio: file,
       };
+      console.log(send);
       res.send(send);
     });
   });
