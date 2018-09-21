@@ -5,7 +5,6 @@ import Moment from 'moment-timezone';
 
 
 const TimelinePost = (props) => {
-  console.log(props.props, ' after fetch');
   return (
   <Card>
     <CardTitle title={`Birdtype: ${props.props.scientific_name}`} />
