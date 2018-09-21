@@ -365,8 +365,8 @@ to send to api calls for photo, description and sound clip
     } const q = JSON.parse(body);
     const k = _.pick(q, ['query']);
     const imgDes = Object.values(k.query.pages);
-    const { description, images } = imgDes[0];
-    const imgArray = images.map(image => image.title);
+    const { description, images, pageprops } = imgDes[0];
+    const imgArray = pageprops.page_image_free;
     getClipSci(req.body.search, (erro, response, bod) => {
       if (erro) {
         console.error(erro);
@@ -378,7 +378,6 @@ to send to api calls for photo, description and sound clip
         sciName: `${gen} ${sp}`,
         audio: file,
       };
-      console.log(send);
       res.send(send);
     });
   });
