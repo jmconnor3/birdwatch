@@ -7,7 +7,9 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const bcrypt = require('bcrypt');
 const path = require('path');
-const { eBird } = require('./utils/utils');
+const { eBird, sciName, coords, getImgDes, getClipSci } = require('./utils/utils');
+const _ = require('lodash');
+
 
 const PORT = process.env.PORT;
 const app = express();
@@ -103,7 +105,46 @@ app.post('/logout', (req, res) => {
  * since this was given to us by a user we need to then store the users id and loc id in their
  * join table. after that we can then update our user's checklist or add to it
  */
+
+ /*
+ `{
+    "birdCommon": "test-bird",
+    "birdScience": "testus-birdus",
+    "user": "test",
+    "flockSize": 20,
+    "location": {
+        "lat": 30.000001,
+        "lng": -90.095701
+    }
+}
+ */
+
+ /* *** TODO  ***
+ create chain of async calls to be able to fill schema for USER DB;
+ */
 app.post('/birds', (req, res) => {
+  
+  res.writeHead(200);
+  res.write('bird added!');
+  console.log(req.body);
+  const userBird = {};
+  userBird.birdCommon = req.body.birdType;
+  userBird.flockSize = req.body.flockSize;
+  sciName(req.body.birdType, (err, response, body) => {
+    if (err) {
+      console.error(err);
+    } const result = JSON.parse(body);
+    const { gen, sp } = result.recordings[0];
+    userBird.birdScience = `${gen} ${sp}`;
+    coords(req.body.location, (error, resp, bod) => {
+      if (err) {
+        console.error(err);
+      } const q = JSON.parse(bod);
+      const { location } = q.results[0].geometry;
+      userBird.location = location;
+      console.log(userBird);
+    });
+  });
   const user = 'test';
   let userId;
   let userLocId;
@@ -262,64 +303,7 @@ app.post('/birds', (req, res) => {
     });
   };
   reuse();
-  // need to rethink the promise chain
-//   db.getUser(user)
-//   .then((data) => {
-//     console.log('this is data', data);
-//     const userId = data[0].id;
-//     db.createBird(req.body.birdCommon, req.body.birdScience)
-//     .then(() => {
-//       db.storeLocation(req.body.location)
-//       .then(() => {
-//         db.getLocId(req.body.location)
-//         .then((location) => {
-//           console.log(location, ' line 123');
-//           locId = location[0].id;
-//           db.getBirdId(req.body.birdScience)
-//           .then((birdInfo) => {
-//             console.log(birdInfo, ' line 127');
-//             birdId = birdInfo[0].id;
-//             db.getSightings(birdId, locId)
-//             .then((sightingArray) => {
-//               console.log(sightingArray, ' line 131');
-//               if (sightingArray.length > 0) {
-//                 db.getRarity(birdId, locId)
-//                 .then((rareArray) => {
-//                   console.log(rareArray, ' line 135');
-//                   rarity = rareArray[0];
-//                   const now = Date.now();
-//                   db.getUserLocId(userId, locId)
-//                   .then((userLocIdArr) => {
-//                     db.getLastSeenFlock(birdId, userLocIdArr[0].id)
-//                     .then((algorithmPieces) => {
-//                       console.log(algorithmPieces, ' line 142');
-//                       const lastSeen = algorithmPieces[0].last_seen;
 
-//                       db.updateSightings(birdId, locId, rarity);
-//                     });
-//                   });
-//                 });
-//               } else {
-//                 db.storeFirstSeen(birdId, locId, Date.now(), req.body.flockSize);
-//               }
-//               db.addToUserLocations(userId, locId)
-//               .then(() => {
-//                 db.getUserLocId(userId, locId)
-//                 .then((userLocArr) => {
-//                   console.log(userLocArr, ' line 155');
-//                   userLocId = userLocArr[0].id;
-//                   db.addToChecklist(birdId, userLocId, Date.now(), req.body.flockSize);
-//                   db.updateLastSeenAndFlock(birdId, userLocId, Date.now(), req.body.flockSize);
-//                 });
-//               });
-//             });
-//           });
-//         });
-//       });
-//     });
-//   });
-  res.writeHead(200);
-  res.write('bird added!');
   res.end();
 });
 
@@ -337,15 +321,18 @@ app.post('/map', (req, res) => {
 
 // get users most recent birds logged in db
 app.get('/birds', (req, res) => {
-  db.getBirdsInDb()
-  .then((data) => {
-    res.writeHead(200);
-    res.write(JSON.stringify(data));
-    res.end();
-  });
+  // db.getBirdsInDb()
+  // .then((data) => {
+  //   res.writeHead(200);
+  //   res.write(JSON.stringify(data));
+  //   res.end();
+  // }).catch((err) => {
+  //   console.error(err);
+  // });
 });
 
 app.get('/profile', (req, res) => {
+
   db.getUser(req.session.user)
   .then((data) => {
     const id = data[0].id;
@@ -365,6 +352,35 @@ app.get('/eBird', (req, res) => {
     if (err) {
       console.error(err);
     } res.send(body);
+  });
+});
+app.post('/search', (req, res) => {
+/*
+answers client request with an object with a bird common name
+to send to api calls for photo, description and sound clip
+*/
+
+console.log(req.body);
+  getImgDes(req.body.search, (err, response, body) => {
+    if (err) {
+      console.error(err);
+    } const q = JSON.parse(body);
+    const k = _.pick(q, ['query']);
+    const imgDes = Object.values(k.query.pages);
+    const { description, images } = imgDes[0];
+    getClipSci(req.body.search, (erro, response, bod) => {
+      if (erro) {
+        console.error(erro);
+      } const g = JSON.parse(bod);
+      const { gen, sp, file } = g.recordings[0];
+      const send = {
+        descript: description,
+        imgs: images,
+        sciName: `${gen} ${sp}`,
+        audio: file,
+      };
+      res.send(send);
+    });
   });
 });
 

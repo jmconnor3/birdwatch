@@ -8,6 +8,7 @@ import SplashPage from './login/SplashPage.jsx';
 import CommentPage from './timeline/Comment.jsx';
 import NotFound from './NotFound.jsx';
 import Profile from './profile/Profile.jsx';
+import Search from './search/BirdCall.jsx'
 import './App.scss';
 
 
@@ -21,6 +22,7 @@ const App = () => (
       <Route path="/timeline" component={TimeLine} />
       <Route path="/logout" component={SplashPage} />
       <Route path="/comment" component={CommentPage} />
+      <Route path="/search" component={Search} />
       <Route path="/profile" component={Profile} />
       <Route path="*" component={NotFound} />
     </Switch>
