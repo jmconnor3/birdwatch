@@ -123,6 +123,9 @@ app.post('/logout', (req, res) => {
  create chain of async calls to be able to fill schema for USER DB;
  */
 app.post('/birds', (req, res) => {
+  
+  res.writeHead(200);
+  res.write('bird added!');
   console.log(req.body);
   const userBird = {};
   userBird.birdCommon = req.body.birdType;
@@ -142,53 +145,164 @@ app.post('/birds', (req, res) => {
       console.log(userBird);
     });
   });
-
-  const user = req.session.user || 'test';
+  const user = 'test';
+  let userId;
   let userLocId;
   let birdId;
   let locId;
-
-  // db.getUser(user)
-  // .then((data) => {
-  //   console.log('this is data', data);
-  //   const userId = data[0].id;
-  //   db.createBird(req.body.birdCommon, req.body.birdScience)
-  //   .then(() => {
-  //     db.storeLocation(req.body.location)
-  //     .then(() => {
-  //       db.getLocId(req.body.location)
-  //       .then((location) => {
-  //         console.log(location, ' line 112');
-  //         locId = location[0].id;
-  //         db.getBirdId(req.body.birdScience)
-  //         .then((birdInfo) => {
-  //           console.log(birdInfo, ' line 116');
-  //           birdId = birdInfo[0].id;
-  //           db.getSightings(birdId, locId)
-  //           .then((sightingArray) => {
-  //             console.log(sightingArray, ' line 120');
-  //             if (sightingArray.length > 0) {
-  //               db.updateSightings(birdId, locId);
-  //             }
-  //             db.addToUserLocations(userId, locId)
-  //             .then(() => {
-  //               db.getUserLocId(userId, locId)
-  //               .then((userLocArr) => {
-  //                 console.log(userLocArr, ' line 128');
-  //                 userLocId = userLocArr[0].id;
-  //                 db.addToChecklist(birdId, userLocId, req.body.lastSeen, req.body.flockSize);
-  //                 db.updateLastSeenAndFlock(birdId, userLocId, req.body.lastSeen, req.body.flockSize);
-  //                 res.writeHead(200);
-  //                 res.write('bird added!');
-  //                 res.end();
-  //               });
-  //             });
-  //           });
-  //         });
-  //       });
-  //     });
-  //   });
-  // });
+  let rarity;
+  let firstSeen;
+  let lastFlockSize;
+  let lastSeen;
+  let sightingTotal;
+  // console.log('this is user session', req.session);
+  const reuse = () => {
+    // get the userid
+    db.getUser(user)
+    .then((userIdArr) => {
+      console.log(userIdArr, ' holds the userId');
+      if (userIdArr.length) {
+        userId = userIdArr[0].id;
+        db.getLocId(req.body.location)
+        // check for locid
+        .then((locIdArr) => {
+          console.log(locIdArr, ' holds the locId');
+          if (locIdArr.length) {
+            locId = locIdArr[0].id;
+            db.getBirdId(req.body.birdScience)
+            // check for birdid
+            .then((birdIdArr) => {
+              console.log(birdIdArr, ' holds the birdId');
+              if (birdIdArr.length) {
+                birdId = birdIdArr[0].id;
+                db.getUserLocId(userId, locId)
+                // check for userlocid
+                .then((userLocArr) => {
+                  console.log(userLocArr, ' holds userLocId');
+                  if (userLocArr.length > 0) {
+                    userLocId = userLocArr[0].id;
+                    db.getFirstSeen(req.body.birdScience, req.body.location)
+                    .then((firstSeenArr) => {
+                      console.log(firstSeenArr, ' holds firstSeen value');
+                      if (firstSeenArr.length > 0) {
+                        // do stuff
+                        firstSeen = firstSeenArr[0].first_seen;
+                        db.getLastSeenFlock(birdId, userLocId)
+                        .then((lastSeenAndFlock) => {
+                          console.log(lastSeenAndFlock, ' holds the lastseen and flock values');
+                          if (lastSeenAndFlock.length > 0) {
+                            lastSeen = lastSeenAndFlock[0].last_seen;
+                            lastFlockSize = lastSeenAndFlock[0].recent_group_size;
+                            db.getRarity(birdId, locId)
+                            .then((rareArray) => {
+                              console.log(rareArray, ' holds the rarity value');
+                              rarity = rareArray[0].rarity;
+                              db.getSightings(birdId, locId)
+                              .then((sightingArr) => {
+                                console.log(sightingArr, ' holds the number of sightings');
+                                sightingTotal = sightingArr[0].sightings;
+                                const time = (Date.now - firstSeen) - (lastSeen - firstSeen);
+                                const currentFlockSize = req.body.flockSize;
+                                rarity = currentFlockSize + ((time / sightingTotal) * (lastFlockSize - currentFlockSize));
+                                db.updateSightingsAndRarity(birdId, locId, rarity);
+                                db.updateLastSeenAndFlock(birdId, userLocId, Date.now(), currentFlockSize);
+                              })
+                              .catch((error) => {
+                                console.error(error);
+                                console.log('getSightings');
+                              });
+                            })
+                            .catch((error) => {
+                              console.error(error);
+                              console.log('getRarity');
+                            });
+                          } else {
+                            // having foreign key issues here as well
+                            db.addToChecklist(birdId, userLocId, Date.now(), req.body.flockSize)
+                            .then(() => {
+                              reuse();
+                            })
+                            .catch((error) => {
+                              console.error(error);
+                              console.log('addToChecklist');
+                            });
+                          }
+                        })
+                        .catch((error) => {
+                          console.error(error);
+                          console.log('getLastSeenFlock');
+                        });
+                      } else {
+                        db.storeFirstSeen(birdId, locId, Date.now())
+                        .then(() => {
+                          reuse();
+                        })
+                        .catch((error) => {
+                          console.error(error);
+                          console.log('storeFirstSeen');
+                        });
+                      }
+                    })
+                    .catch((error) => {
+                      console.error(error);
+                      console.log('getFirstSeen');
+                    });
+                  } else {
+                    // need to figure out why this didn't like foreign keys
+                    db.addToUserLocations(userId, locId)
+                    .then(() => {
+                      console.log('added a row to users_locations');
+                      reuse();
+                    })
+                    .catch((error) => {
+                      console.error(error);
+                      console.log('addToUserLocations');
+                    });
+                  }
+                  console.log('empty');
+                })
+                .catch((error) => {
+                  console.error(error);
+                  console.log('getUserLocId');
+                });
+              } else {
+                db.createBird(req.body.birdCommon, req.body.birdScience)
+                .then(() => {
+                  reuse();
+                })
+                .catch((error) => {
+                  console.error(error);
+                  console.log('createBird');
+                });
+              }
+            })
+            .catch((error) => {
+              console.error(error);
+              console.log('getBirdId');
+            });
+          } else {
+            db.storeLocation(req.body.location)
+            .then(() => {
+              reuse();
+            })
+            .catch((error) => {
+              console.error(error);
+              console.log('storeLocation');
+            });
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+          console.log('getLocId');
+        });
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+      console.log('getUser');
+    });
+  };
+  reuse();
 
   res.end();
 });
@@ -231,7 +345,7 @@ app.get('/profile', (req, res) => {
   });
 });
 /*
-set route for get request from client to retreive markers of local siting
+set route for get request from client to retrieve markers of local siting
 */
 app.get('/eBird', (req, res) => {
   eBird((err, result, body) => {
