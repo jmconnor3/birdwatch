@@ -123,27 +123,6 @@ app.post('/logout', (req, res) => {
  create chain of async calls to be able to fill schema for USER DB;
  */
 app.post('/birds', (req, res) => {
-  res.writeHead(200);
-  res.write('bird added!');
-  console.log(req.body);
-  const userBird = {};
-  userBird.birdCommon = req.body.birdType;
-  userBird.flockSize = req.body.flockSize;
-  sciName(req.body.birdType, (err, response, body) => {
-    if (err) {
-      console.error(err);
-    } const result = JSON.parse(body);
-    const { gen, sp } = result.recordings[0];
-    userBird.birdScience = `${gen} ${sp}`;
-    coords(req.body.location, (error, resp, bod) => {
-      if (err) {
-        console.error(err);
-      } const q = JSON.parse(bod);
-      const { location } = q.results[0].geometry;
-      userBird.location = location;
-      console.log(userBird);
-    });
-  });
   const user = 'test';
   let userId;
   let userLocId;
@@ -154,156 +133,187 @@ app.post('/birds', (req, res) => {
   let lastFlockSize;
   let lastSeen;
   let sightingTotal;
-  // console.log('this is user session', req.session);
-  const reuse = () => {
-    // get the userid
-    db.getUser(user)
-    .then((userIdArr) => {
-      console.log(userIdArr, ' holds the userId');
-      if (userIdArr.length) {
-        userId = userIdArr[0].id;
-        db.getLocId(req.body.location)
-        // check for locid
-        .then((locIdArr) => {
-          console.log(locIdArr, ' holds the locId');
-          if (locIdArr.length) {
-            locId = locIdArr[0].id;
-            db.getBirdId(req.body.birdScience)
-            // check for birdid
-            .then((birdIdArr) => {
-              console.log(birdIdArr, ' holds the birdId');
-              if (birdIdArr.length) {
-                birdId = birdIdArr[0].id;
-                db.getUserLocId(userId, locId)
-                // check for userlocid
-                .then((userLocArr) => {
-                  console.log(userLocArr, ' holds userLocId');
-                  if (userLocArr.length > 0) {
-                    userLocId = userLocArr[0].id;
-                    db.getFirstSeen(req.body.birdScience, req.body.location)
-                    .then((firstSeenArr) => {
-                      console.log(firstSeenArr, ' holds firstSeen value');
-                      if (firstSeenArr.length > 0) {
-                        // do stuff
-                        firstSeen = firstSeenArr[0].first_seen;
-                        db.getLastSeenFlock(birdId, userLocId)
-                        .then((lastSeenAndFlock) => {
-                          console.log(lastSeenAndFlock, ' holds the lastseen and flock values');
-                          if (lastSeenAndFlock.length > 0) {
-                            lastSeen = lastSeenAndFlock[0].last_seen;
-                            lastFlockSize = lastSeenAndFlock[0].recent_group_size;
-                            db.getRarity(birdId, locId)
-                            .then((rareArray) => {
-                              console.log(rareArray, ' holds the rarity value');
-                              rarity = rareArray[0].rarity;
-                              db.getSightings(birdId, locId)
-                              .then((sightingArr) => {
-                                console.log(sightingArr, ' holds the number of sightings');
-                                sightingTotal = sightingArr[0].sightings;
-                                const time = (Date.now - firstSeen) - (lastSeen - firstSeen);
-                                const currentFlockSize = req.body.flockSize;
-                                rarity = currentFlockSize + ((time / sightingTotal) * (lastFlockSize - currentFlockSize));
-                                db.updateSightingsAndRarity(birdId, locId, rarity);
-                                db.updateLastSeenAndFlock(birdId, userLocId, Date.now(), currentFlockSize);
-                              })
-                              .catch((error) => {
-                                console.error(error);
-                                console.log('getSightings');
-                              });
+  res.writeHead(200);
+  res.write('bird added!');
+  console.log(req.body);
+  const userBird = {};
+  userBird.birdCommon = req.body.birdType;
+  userBird.flockSize = req.body.flockSize;
+  sciName(req.body.birdType, (err, response, body) => {
+    if (err) {
+      console.error(err);
+    } const result = JSON.parse(body);
+    console.log(result);
+    const { gen, sp } = result.recordings[0];
+    userBird.birdScience = `${gen} ${sp}`;
+    coords(req.body.location, (error, resp, bod) => {
+      if (err) {
+        console.error(err);
+      } const q = JSON.parse(bod);
+      console.log(q);
+      const { location } = q.results[0].geometry;
+      userBird.location = location;
+      userBird.location.lat = Number(Number.parseFloat(userBird.location.lat).toFixed(6));
+      userBird.location.lng = Number(Number.parseFloat(userBird.location.lng).toFixed(6));
+      console.log(userBird);
+      const reuse = () => {
+        // get the userid
+        db.getUser(user)
+        .then((userIdArr) => {
+          console.log(userIdArr, ' holds the userId');
+          if (userIdArr.length) {
+            userId = userIdArr[0].id;
+            console.log(userBird.location);
+            db.getLocId(userBird.location)
+            // check for locid
+            .then((locIdArr) => {
+              console.log(locIdArr, ' holds the locId');
+              if (locIdArr.length > 0) {
+                locId = locIdArr[0].id;
+                db.getBirdId(userBird.birdScience)
+                // check for birdid
+                .then((birdIdArr) => {
+                  console.log(birdIdArr, ' holds the birdId');
+                  if (birdIdArr.length) {
+                    birdId = birdIdArr[0].id;
+                    db.getUserLocId(userId, locId)
+                    // check for userlocid
+                    .then((userLocArr) => {
+                      console.log(userLocArr, ' holds userLocId');
+                      if (userLocArr.length > 0) {
+                        userLocId = userLocArr[0].id;
+                        db.getFirstSeen(userBird.birdScience, userBird.location)
+                        .then((firstSeenArr) => {
+                          console.log(firstSeenArr, ' holds firstSeen value');
+                          if (firstSeenArr.length > 0) {
+                            // do stuff
+                            firstSeen = firstSeenArr[0].first_seen;
+                            db.getLastSeenFlock(birdId, userLocId)
+                            .then((lastSeenAndFlock) => {
+                              console.log(lastSeenAndFlock, ' holds the lastseen and flock values');
+                              if (lastSeenAndFlock.length > 0) {
+                                lastSeen = lastSeenAndFlock[0].last_seen;
+                                lastFlockSize = lastSeenAndFlock[0].recent_group_size;
+                                db.getRarity(birdId, locId)
+                                .then((rareArray) => {
+                                  console.log(rareArray, ' holds the rarity value');
+                                  rarity = rareArray[0].rarity;
+                                  db.getSightings(birdId, locId)
+                                  .then((sightingArr) => {
+                                    console.log(sightingArr, ' holds the number of sightings');
+                                    sightingTotal = sightingArr[0].sightings;
+                                    const time = (Date.now() - firstSeen) - (lastSeen - firstSeen);
+                                    const currentFlockSize = userBird.flockSize;
+                                    rarity = currentFlockSize + ((time / sightingTotal) * (lastFlockSize - currentFlockSize));
+                                    console.log(rarity , ' this is rarity');
+                                    db.updateSightingsAndRarity(birdId, locId, rarity)
+                                    .catch((failedSightRarity) => {
+                                      console.error(failedSightRarity);
+                                    });
+                                    db.updateLastSeenAndFlock(birdId, userLocId, Date.now(), currentFlockSize)
+                                    .catch((failedLastSeen) => {
+                                      console.error(failedLastSeen);                                    });
+                                    res.end();
+                                  })
+                                  .catch((error) => {
+                                    console.error(error);
+                                    console.log('getSightings');
+                                  });
+                                })
+                                .catch((error) => {
+                                  console.error(error);
+                                  console.log('getRarity');
+                                });
+                              } else {
+                                // having foreign key issues here as well
+                                db.addToChecklist(birdId, userLocId, Date.now(), userBird.flockSize)
+                                .then(() => {
+                                  reuse();
+                                })
+                                .catch((error) => {
+                                  console.error(error);
+                                  console.log('addToChecklist');
+                                });
+                              }
                             })
                             .catch((error) => {
                               console.error(error);
-                              console.log('getRarity');
+                              console.log('getLastSeenFlock');
                             });
                           } else {
-                            // having foreign key issues here as well
-                            db.addToChecklist(birdId, userLocId, Date.now(), req.body.flockSize)
+                            db.storeFirstSeen(birdId, locId, Date.now())
                             .then(() => {
                               reuse();
                             })
                             .catch((error) => {
                               console.error(error);
-                              console.log('addToChecklist');
+                              console.log('storeFirstSeen');
                             });
                           }
                         })
                         .catch((error) => {
                           console.error(error);
-                          console.log('getLastSeenFlock');
+                          console.log('getFirstSeen');
                         });
                       } else {
-                        db.storeFirstSeen(birdId, locId, Date.now())
+                        // need to figure out why this didn't like foreign keys
+                        db.addToUserLocations(userId, locId)
                         .then(() => {
+                          console.log('added a row to users_locations');
                           reuse();
                         })
                         .catch((error) => {
                           console.error(error);
-                          console.log('storeFirstSeen');
+                          console.log('addToUserLocations');
                         });
                       }
+                      console.log('empty');
                     })
                     .catch((error) => {
                       console.error(error);
-                      console.log('getFirstSeen');
+                      console.log('getUserLocId');
                     });
                   } else {
-                    // need to figure out why this didn't like foreign keys
-                    db.addToUserLocations(userId, locId)
+                    db.createBird(userBird.birdCommon, userBird.birdScience)
                     .then(() => {
-                      console.log('added a row to users_locations');
                       reuse();
                     })
                     .catch((error) => {
                       console.error(error);
-                      console.log('addToUserLocations');
+                      console.log('createBird');
                     });
                   }
-                  console.log('empty');
                 })
                 .catch((error) => {
                   console.error(error);
-                  console.log('getUserLocId');
+                  console.log('getBirdId');
                 });
               } else {
-                db.createBird(req.body.birdCommon, req.body.birdScience)
+                db.storeLocation(userBird.location)
                 .then(() => {
                   reuse();
                 })
                 .catch((error) => {
                   console.error(error);
-                  console.log('createBird');
+                  console.log('storeLocation');
                 });
               }
             })
             .catch((error) => {
               console.error(error);
-              console.log('getBirdId');
-            });
-          } else {
-            db.storeLocation(req.body.location)
-            .then(() => {
-              reuse();
-            })
-            .catch((error) => {
-              console.error(error);
-              console.log('storeLocation');
+              console.log('getLocId');
             });
           }
         })
         .catch((error) => {
           console.error(error);
-          console.log('getLocId');
+          console.log('getUser');
         });
-      }
-    })
-    .catch((error) => {
-      console.error(error);
-      console.log('getUser');
+      };
+      reuse();
     });
-  };
-  reuse();
-
-  res.end();
+  });
+  // console.log('this is user session', req.session);
 });
 
 app.post('/map', (req, res) => {
