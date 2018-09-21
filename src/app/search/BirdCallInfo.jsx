@@ -6,7 +6,7 @@ const BirdCallInfo = ({ props }) => {
 
   return (
     <div>
-      <img src={props[0].imgs[0].substring(5)} />
+      <img src={props[0].imgs[0]} alt={props[0].sciName}/>
       <h1>{props[0].sciName}</h1>
       <h1>{props[0].descript}</h1>
       <audio controls src={props[0].audio}></audio>
