@@ -119,46 +119,48 @@ app.post('/birds', (req, res) => {
     // get the userid
     db.getUser(user)
     .then((userIdArr) => {
-      console.log(userIdArr);
+      console.log(userIdArr, ' holds the userId');
       if (userIdArr.length) {
         userId = userIdArr[0].id;
         db.getLocId(req.body.location)
         // check for locid
         .then((locIdArr) => {
-          console.log(locIdArr);
+          console.log(locIdArr, ' holds the locId');
           if (locIdArr.length) {
             locId = locIdArr[0].id;
             db.getBirdId(req.body.birdScience)
             // check for birdid
             .then((birdIdArr) => {
-              console.log(birdIdArr);
+              console.log(birdIdArr, ' holds the birdId');
               if (birdIdArr.length) {
                 birdId = birdIdArr[0].id;
                 db.getUserLocId(userId, locId)
                 // check for userlocid
                 .then((userLocArr) => {
-                  console.log(userLocArr, ' userloc array');
+                  console.log(userLocArr, ' holds userLocId');
                   if (userLocArr.length > 0) {
-                    console.log(userLocArr, ' entered into the if');
                     userLocId = userLocArr[0].id;
                     db.getFirstSeen(req.body.birdScience, req.body.location)
                     .then((firstSeenArr) => {
+                      console.log(firstSeenArr, ' holds firstSeen value');
                       if (firstSeenArr.length > 0) {
                         // do stuff
                         firstSeen = firstSeenArr[0].first_seen;
                         db.getLastSeenFlock(birdId, userLocId)
                         .then((lastSeenAndFlock) => {
+                          console.log(lastSeenAndFlock, ' holds the lastseen and flock values');
                           if (lastSeenAndFlock.length > 0) {
                             lastSeen = lastSeenAndFlock[0].last_seen;
                             lastFlockSize = lastSeenAndFlock[0].recent_group_size;
                             db.getRarity(birdId, locId)
                             .then((rareArray) => {
-                              console.log('not here');
+                              console.log(rareArray, ' holds the rarity value');
                               rarity = rareArray[0].rarity;
                               db.getSightings(birdId, locId)
                               .then((sightingArr) => {
+                                console.log(sightingArr, ' holds the number of sightings');
                                 sightingTotal = sightingArr[0].sightings;
-                                const time = Date.now - lastSeen;
+                                const time = (Date.now - firstSeen) - (lastSeen - firstSeen);
                                 const currentFlockSize = req.body.flockSize;
                                 rarity = currentFlockSize + ((time / sightingTotal) * (lastFlockSize - currentFlockSize));
                                 db.updateSightingsAndRarity(birdId, locId, rarity);
@@ -358,7 +360,7 @@ app.get('/profile', (req, res) => {
 /*
 set route for get request from client to retrieve markers of local siting
 */
-app.get('/eBird', (req, res)=> {
+app.get('/eBird', (req, res) => {
   eBird((err, result, body) => {
     if (err) {
       console.error(err);
