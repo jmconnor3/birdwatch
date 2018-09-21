@@ -15,7 +15,7 @@ class SimpleForm extends Component {
       open: false,
       data: [{
         descript: '',
-        imgs: '',
+        imgs: 'yuiopoiuy',
         sciName: '',
         audio: '',
       }],
