@@ -331,6 +331,39 @@ app.get('/birds', (req, res) => {
   // });
 });
 
+app.get('/map', (req, res) => {
+  let bldata;
+  const birds = [];
+  const locations = [];
+  db.getBirdLocData()
+  .then((data) => {
+    bldata = data;
+    console.log(bldata);
+    bldata.forEach((birdLocObj, index) => {
+      db.getBirdById(birdLocObj.id_bird)
+      .then((birdData) => {
+        birds.push(birdData);
+        db.getLocById(birdLocObj.id_loc)
+        .then((locData) => {
+          locations.push(locData);
+          if (index === bldata.length - 1) {
+            res.send({ bldata, birds, locations });
+          }
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+    });
+  })
+  .catch((error) => {
+    console.error(error);
+  });
+});
+
 app.get('/profile', (req, res) => {
 
   db.getUser(req.session.user)
@@ -360,7 +393,7 @@ answers client request with an object with a bird common name
 to send to api calls for photo, description and sound clip
 */
 
-console.log(req.body);
+  console.log(req.body);
   getImgDes(req.body.search, (err, response, body) => {
     if (err) {
       console.error(err);
