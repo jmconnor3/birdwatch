@@ -4,19 +4,22 @@ import { Card, CardHeader, CardTitle } from 'material-ui/Card';
 import Moment from 'moment-timezone';
 
 
-const TimelinePost = ({ bird, location, username, created }) => (
+const TimelinePost = (props) => {
+  console.log(props.props, ' after fetch');
+  return (
   <Card>
-    <CardTitle title={`Birdtype: ${bird}`} />
-    <br />
-    <CardTitle title={`Location: ${location}`} />
+    <CardTitle title={`Birdtype: ${props.props.scientific_name}`} />
+    {/* <br />
+    <CardTitle title={`Location: City Park`} />
     <br />
     <CardHeader
-      title={`bird sighting by @${username}`}
-      subtitle={`spotted ${Moment(created).calendar()}`}
-    />
+      title={`bird sighting by @user`}
+      subtitle={`spotted Tuesday, sept 23`}
+    /> */}
   </Card>
 );
-
+}
+// ${Moment('created').calendar()}
 TimelinePost.propTypes = {
   bird: PropTypes.string.isRequired,
   location: PropTypes.string.isRequired,
