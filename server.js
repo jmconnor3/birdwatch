@@ -123,7 +123,6 @@ app.post('/logout', (req, res) => {
  create chain of async calls to be able to fill schema for USER DB;
  */
 app.post('/birds', (req, res) => {
-  
   res.writeHead(200);
   res.write('bird added!');
   console.log(req.body);
@@ -365,7 +364,6 @@ app.get('/map', (req, res) => {
 });
 
 app.get('/profile', (req, res) => {
-
   db.getUser(req.session.user)
   .then((data) => {
     const id = data[0].id;
