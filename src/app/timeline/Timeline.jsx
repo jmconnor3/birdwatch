@@ -12,21 +12,23 @@ import { grey50 } from 'material-ui/styles/colors';
 const upIcon = <LocationOn color={grey50} />;
 
 class Timeline extends Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
-      birdFeed: null,
+      birdFeed: [],
     };
     this.loadFeed = this.loadFeed.bind(this);
   }
-  componentWillMount() {
+  componentDidMount() {
     this.loadFeed();
   }
   loadFeed() {
-    axios.get('/birds').then((data) => {
-      this.setState({ birdFeed: data.data });
-      console.log(this.state.birdFeed, 'fetch birds');
+    axios.get('/birds').then(({ data }) => {
+      console.log(data);
+      this.setState({ birdFeed: data });
+      // console.log(this.state.birdFeed, 'fetch birds');
     });
+    console.log(this.state.birdFeed);
   }
   render() {
     return (
@@ -36,15 +38,10 @@ class Timeline extends Component {
             <Header />
             <Comment loadFeed={this.loadFeed} />
             <div className="bird-feed">
-              {this.state.birdFeed && this.state.birdFeed.map(birdPost => (
-                <TimelinePost
-                  bird={birdPost.bird}
-                  location={birdPost.location}
-                  created={birdPost.created}
-                  username={birdPost.username}
-                  key={birdPost.id}
-                />
-              ))}
+              {this.state.birdFeed.map( (birdPost) => {
+                console.log(birdPost);
+               return (<TimelinePost props={birdPost} />)
+              })}
             </div>
             <ScrollToTop
               showUnder={100}
