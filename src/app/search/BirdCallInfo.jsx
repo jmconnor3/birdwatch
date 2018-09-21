@@ -1,11 +1,14 @@
 import React from 'react';
+import ReactAudioPlayer from 'react-audio-player';
+const BirdCallInfo = ({ props }) => {
+  console.log(Object.keys(props[0]));
 
-const BirdCallInfo = () => {
   return (
-    <div>This is what will appear
-      <h1>photo</h1>
-      <h1> description </h1>
-      <h1> sound clip</h1>
+    <div>ht
+      <h1>{props[0].sciName}</h1>
+      <h1>{props[0].descript}</h1>
+      {/* <ReactAudioPlayer src={props.audio} controls crossOrigin /> */}
+      <h1>{props[0].imgs[0]}</h1>
     </div>
   );
 };
