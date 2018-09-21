@@ -212,7 +212,8 @@ app.post('/birds', (req, res) => {
                                     });
                                     db.updateLastSeenAndFlock(birdId, userLocId, Date.now(), currentFlockSize)
                                     .catch((failedLastSeen) => {
-                                      console.error(failedLastSeen);                                    });
+                                      console.error(failedLastSeen);
+                                    });
                                     res.end();
                                   })
                                   .catch((error) => {
@@ -347,7 +348,7 @@ app.get('/map', (req, res) => {
   db.getBirdLocData()
   .then((data) => {
     bldata = data;
-    console.log(bldata);
+    // console.log(bldata);
     bldata.forEach((birdLocObj, index) => {
       db.getBirdById(birdLocObj.id_bird)
       .then((birdData) => {
@@ -356,7 +357,8 @@ app.get('/map', (req, res) => {
         .then((locData) => {
           locations.push(locData);
           if (index === bldata.length - 1) {
-            res.send({ bldata, birds, locations });
+            const send = JSON.stringify({ bldata, birds, locations });
+            res.send(send);
           }
         })
         .catch((error) => {
