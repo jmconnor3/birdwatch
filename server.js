@@ -321,14 +321,14 @@ app.post('/map', (req, res) => {
 
 // get users most recent birds logged in db
 app.get('/birds', (req, res) => {
-  // db.getBirdsInDb()
-  // .then((data) => {
-  //   res.writeHead(200);
-  //   res.write(JSON.stringify(data));
-  //   res.end();
-  // }).catch((err) => {
-  //   console.error(err);
-  // });
+  db.getBirdsInDb()
+  .then((data) => {
+    res.writeHead(200);
+    res.write(JSON.stringify(data));
+    res.end();
+  }).catch((err) => {
+    console.error(err);
+  });
 });
 
 app.get('/map', (req, res) => {
@@ -398,7 +398,7 @@ to send to api calls for photo, description and sound clip
     } const q = JSON.parse(body);
     const k = _.pick(q, ['query']);
     const imgDes = Object.values(k.query.pages);
-    const { description, images, pageprops } = imgDes[0];
+    const { description, pageprops } = imgDes[0];
     const imgArray = pageprops.page_image_free;
     getClipSci(req.body.search, (erro, response, bod) => {
       if (erro) {
