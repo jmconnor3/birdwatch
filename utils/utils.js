@@ -13,7 +13,7 @@ Set env key for ebird call;
 const eBird = (callback) => {
   const options = {
     headers: {
-      'X-eBirdApiToken': key.ebirdKEY,
+      'X-eBirdApiToken': process.env.EBIRD || key.ebirdKEY,
     },
   };
   request('https://ebird.org/ws2.0/data/obs/US-LA-071/recent', options, (err, response, body) => {
@@ -48,7 +48,7 @@ const sciName = (name, callback) => {
 };
 
 const coords = (location, callback) => {
-  request(`https://maps.googleapis.com/maps/api/geocode/json?address=${location}&key=${key.gKey}`, (err, response, body) => {
+  request(`https://maps.googleapis.com/maps/api/geocode/json?address=${location}&key=${process.env.GKEY || key.gKey}`, (err, response, body) => {
     if (err) {
       console.error(err);
     } callback(err, response, body);
