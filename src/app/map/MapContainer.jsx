@@ -32,7 +32,7 @@ class MapContainer extends Component {
     this.setState({ latLng: data });
   }
   birdCatcher(data) {
-    data.push({ lat: 29.9934, lng: -90.0982, sciName: 'connor',comName: 'Black Vulture', locName: 'City Park, New Orleans, LA' });
+    data.push({ lat: 29.9934, lng: -90.0982, sciName: 'Coragyps atratus',comName: 'Black Vulture', locName: 'City Park, New Orleans, LA', howMany: 3 });
     this.setState({ birdData: data });
   }
   /*
