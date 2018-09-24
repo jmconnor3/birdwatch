@@ -7,6 +7,8 @@ import GMap from './GMap.jsx';
 import ScrollToTop from 'react-scroll-up';
 import LocationOn from 'material-ui/svg-icons/navigation/arrow-upward';
 import axios from 'axios';
+import _ from 'lodash';
+
 const upIcon = <LocationOn />;
 
 class MapContainer extends Component {
@@ -19,9 +21,12 @@ class MapContainer extends Component {
     this.getLatLng = this.getLatLng.bind(this);
     this.birdCatcher = this.birdCatcher.bind(this);
     this.eBird = this.eBird.bind(this);
+    this.getMap = this.getMap.bind(this);
   }
-  componentDidMount() {
+  componentWillMount() {
     this.eBird();
+    this.getMap();
+
   }
   getLatLng(data) {
     this.setState({ latLng: data });
@@ -34,9 +39,20 @@ class MapContainer extends Component {
    sitings that are logged into ebird.
   */
 
+  getMap() {
+    axios.get('/map')
+    .then(({ data }) => {
+      const { bldata, locations, birds } = data;
+      console.log(bldata, locations, birds, _);
+      console.log(_.flatten(locations));
+      console.log(_.flatten(birds));
+    });
+  }
+
   eBird() {
     axios.get('/eBird')
    .then(({ data }) => {
+    // console.log(data);
      this.birdCatcher(data);
    });
   }
