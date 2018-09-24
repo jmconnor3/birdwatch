@@ -23,7 +23,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.listen(3000, () => {
+app.listen(PORT, () => {
   console.log(`Listening at ${PORT}`);
 });
 
