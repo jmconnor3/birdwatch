@@ -34,7 +34,7 @@ class GMap extends Component {
         {this.props.birdData.map((bird, i) => {  
           const { lat, lng } = bird;
           return (
-            <Marker
+            <Marker 
               onClick={this.onMarkerClick}
               name={`${bird.comName}(${bird.howMany})`}
               date={`Last seen ${Moment(bird.obsDt).fromNow()}`}
