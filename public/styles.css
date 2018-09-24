@@ -1,15 +1,1 @@
-@import url(https://fonts.googleapis.com/css?family=Roboto);body {
-  background: white;
-  font-family: 'Open Sans', sans-serif;
-  background-repeat: no-repeat;
-  font-family: 'Roboto', sans-serif; }
-
-.img {
-  margin: auto; }
-
-.footer {
-  position: absolute;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  padding: 1rem; }
+@import url(https://fonts.googleapis.com/css?family=Roboto);body{background:#fff;font-family:Open Sans,sans-serif;background-repeat:no-repeat;font-family:Roboto,sans-serif}.img{margin:auto}.footer{position:absolute;right:0;bottom:0;left:0;padding:1rem}
